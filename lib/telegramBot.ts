@@ -7,10 +7,10 @@ export class TelegramBot {
     this.botToken = botToken;
   }
 
-  async sendMessage(chatId: number, text: string): Promise<any> {
+  async sendMessage(chatId: number, text: string) {
     const url = `https://api.telegram.org/bot${this.botToken}/sendMessage`;
 
-    const response = await fetch(url, {
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -20,7 +20,6 @@ export class TelegramBot {
       }),
     });
 
-    const data = await response.json();
-    return data;
+    return res.json();
   }
 }
