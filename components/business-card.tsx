@@ -17,12 +17,12 @@ interface BusinessCardProps {
 export default function BusinessCard({ user, onUserUpdate }: BusinessCardProps) {
   const [editing, setEditing] = useState(false)
   const [cardData, setCardData] = useState({
-    name: user.businessCard?.name || "",
-    title: user.businessCard?.title || "",
-    bio: user.businessCard?.bio || "",
-    website: user.businessCard?.website || "",
-    twitter: user.businessCard?.twitter || "",
-    telegram: user.businessCard?.telegram || "",
+    name: user?.businessCard?.name || "",
+    title: user?.businessCard?.title || "",
+    bio: user?.businessCard?.bio || "",
+    website: user?.businessCard?.website || "",
+    twitter: user?.businessCard?.twitter || "",
+    telegram: user?.businessCard?.telegram || "",
   })
 
   const handleSave = async () => {
@@ -31,7 +31,7 @@ export default function BusinessCard({ user, onUserUpdate }: BusinessCardProps) 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          walletAddress: user.walletAddress,
+          walletAddress: user?.walletAddress,
           businessCard: cardData,
         }),
       })
@@ -47,7 +47,7 @@ export default function BusinessCard({ user, onUserUpdate }: BusinessCardProps) 
   }
 
   const shareCard = () => {
-    const cardUrl = `${window.location.origin}/card/${user.walletAddress}`
+    const cardUrl = `${window.location.origin}/card/${user?.walletAddress}`
     if (navigator.share) {
       navigator.share({
         title: `${cardData.name || "Hash Coin Player"}'s Business Card`,
@@ -81,7 +81,7 @@ export default function BusinessCard({ user, onUserUpdate }: BusinessCardProps) 
             <div className="text-right">
               <div className="text-3xl mb-2">🪙</div>
               <Badge variant="secondary" className="bg-white/20 text-white">
-                Level {user.level}
+                Level {user?.level}
               </Badge>
             </div>
           </div>
@@ -91,23 +91,23 @@ export default function BusinessCard({ user, onUserUpdate }: BusinessCardProps) 
               <div className="flex items-center gap-2">
                 <Wallet className="h-4 w-4" />
                 <span className="truncate">
-                  {user.walletAddress.slice(0, 8)}...{user.walletAddress.slice(-6)}
+                  {user?.walletAddress.slice(0, 8)}...{user?.walletAddress.slice(-6)}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4" />
-                <span>{user.hashBalance.toLocaleString()} HASH</span>
+                <span>{user?.hashBalance?.toLocaleString()} HASH</span>
               </div>
               {cardData.website && (
                 <div className="flex items-center gap-2">
                   <LinkIcon className="h-4 w-4" />
-                  <span className="truncate">{cardData.website}</span>
+                  <span className="truncate">{cardData?.website}</span>
                 </div>
               )}
               {cardData.twitter && (
                 <div className="flex items-center gap-2">
                   <span>🐦</span>
-                  <span className="truncate">@{cardData.twitter}</span>
+                  <span className="truncate">@{cardData?.twitter}</span>
                 </div>
               )}
             </div>

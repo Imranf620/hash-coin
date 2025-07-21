@@ -92,21 +92,21 @@ export default function HomePage() {
                   <div>
                     <CardTitle className="text-white flex items-center gap-2">
                       <Coins className="h-5 w-5" />
-                      {user.hashBalance.toLocaleString()} HASH
+                      {user?.hashBalance?.toLocaleString()} HASH
                     </CardTitle>
                     <CardDescription className="text-white/70">
-                      Level {user.level} • {user.tapCount} total taps
+                      Level {user?.level} • {user?.tapCount} total taps
                     </CardDescription>
                   </div>
                   <Badge variant="secondary" className="bg-white/20 text-white">
-                    {user.level < 10
-                      ? `${Math.floor((user.hashBalance % 1000) / 10)}% to Level ${user.level + 1}`
+                    {user?.level < 10
+                      ? `${Math.floor((user?.hashBalance % 1000) / 10)}% to Level ${user?.level + 1}`
                       : "Max Level"}
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent>
-                <Progress value={user.level < 10 ? (user.hashBalance % 1000) / 10 : 100} className="h-2 bg-white/20" />
+                <Progress value={user?.level < 10 ? (user?.hashBalance % 1000) / 10 : 100} className="h-2 bg-white/20" />
               </CardContent>
             </Card>
           </div>

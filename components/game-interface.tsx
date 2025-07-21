@@ -18,7 +18,7 @@ export default function GameInterface({ user, onUserUpdate }: GameInterfaceProps
 
   const handleTap = useCallback(async () => {
     const now = Date.now()
-    const tapCooldown = user.boostsPurchased?.fastTap ? 500 : 1000 // 0.5s or 1s cooldown
+    const tapCooldown = user?.boostsPurchased?.fastTap ? 500 : 1000 // 0.5s or 1s cooldown
 
     if (now - lastTap < tapCooldown) return
 
@@ -32,7 +32,7 @@ export default function GameInterface({ user, onUserUpdate }: GameInterfaceProps
       const response = await fetch("/api/tap", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ walletAddress: user.walletAddress }),
+        body: JSON.stringify({ walletAddress: user?.walletAddress }),
       })
 
       if (response.ok) {
@@ -46,8 +46,8 @@ export default function GameInterface({ user, onUserUpdate }: GameInterfaceProps
     }
   }, [user, lastTap, onUserUpdate])
 
-  const coinsPerTap = user.boostsPurchased?.multiplier ? 2 : 1
-  const tapRate = user.boostsPurchased?.fastTap ? "2 taps/sec" : "1 tap/sec"
+  const coinsPerTap = user?.boostsPurchased?.multiplier ? 2 : 1
+  const tapRate = user?.boostsPurchased?.fastTap ? "2 taps/sec" : "1 tap/sec"
 
   return (
     <div className="space-y-6">
@@ -91,7 +91,7 @@ export default function GameInterface({ user, onUserUpdate }: GameInterfaceProps
         <Card className="bg-white/10 backdrop-blur-sm border-white/20">
           <CardContent className="p-4 text-center">
             <Coins className="h-8 w-8 text-yellow-300 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-white">{user.hashBalance.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-white">{user?.hashBalance?.toLocaleString()}</div>
             <div className="text-white/70 text-sm">Total HASH</div>
           </CardContent>
         </Card>
@@ -99,13 +99,13 @@ export default function GameInterface({ user, onUserUpdate }: GameInterfaceProps
         <Card className="bg-white/10 backdrop-blur-sm border-white/20">
           <CardContent className="p-4 text-center">
             <Zap className="h-8 w-8 text-blue-300 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-white">{user.tapCount.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-white">{user?.tapCount?.toLocaleString()}</div>
             <div className="text-white/70 text-sm">Total Taps</div>
           </CardContent>
         </Card>
       </div>
 
-      {user.boostsPurchased?.autoTap && (
+      {user?.boostsPurchased?.autoTap && (
         <Card className="bg-green-500/20 backdrop-blur-sm border-green-400/30">
           <CardContent className="p-4 text-center">
             <div className="text-green-300 font-semibold">🤖 Auto-Tap Active</div>

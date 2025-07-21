@@ -46,24 +46,24 @@ export default function Leaderboard() {
   const LeaderboardList = ({ data, type }: { data: any[]; type: string }) => (
     <div className="space-y-2">
       {data.map((user, index) => (
-        <Card key={user._id} className="bg-white/10 backdrop-blur-sm border-white/20">
+        <Card key={user?._id} className="bg-white/10 backdrop-blur-sm border-white/20">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {getRankIcon(index + 1)}
                 <div>
                   <div className="text-white font-semibold">
-                    {user.username || `${user.walletAddress.slice(0, 6)}...${user.walletAddress.slice(-4)}`}
+                    {user?.username || `${user?.walletAddress.slice(0, 6)}...${user?.walletAddress.slice(-4)}`}
                   </div>
-                  <div className="text-white/70 text-sm">Level {user.level}</div>
+                  <div className="text-white/70 text-sm">Level {user?.level}</div>
                 </div>
               </div>
               <div className="text-right">
                 <div className="text-white font-bold">
-                  {type === "balance" && `${user.hashBalance.toLocaleString()} HASH`}
-                  {type === "taps" && `${user.tapCount.toLocaleString()} taps`}
-                  {type === "referrals" && `${user.referralCount || 0} referrals`}
-                  {type === "level" && `Level ${user.level}`}
+                  {type === "balance" && `${user?.hashBalance.toLocaleString()} HASH`}
+                  {type === "taps" && `${user?.tapCount.toLocaleString()} taps`}
+                  {type === "referrals" && `${user?.referralCount || 0} referrals`}
+                  {type === "level" && `Level ${user?.level}`}
                 </div>
               </div>
             </div>

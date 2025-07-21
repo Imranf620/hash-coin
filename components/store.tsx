@@ -57,14 +57,14 @@ const storeItems = [
 
 export default function Store({ user, onUserUpdate }: StoreProps) {
   const handlePurchase = async (itemId: string, price: number) => {
-    if (user.hashBalance < price) return
+    if (user?.hashBalance < price) return
 
     try {
       const response = await fetch("/api/purchase", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          walletAddress: user.walletAddress,
+          walletAddress: user?.walletAddress,
           itemId,
           price,
         }),
@@ -94,8 +94,8 @@ export default function Store({ user, onUserUpdate }: StoreProps) {
       <div className="grid gap-4">
         {storeItems.map((item) => {
           const Icon = item.icon
-          const owned = user.boostsPurchased?.[item.id]
-          const canAfford = user.hashBalance >= item.price
+          const owned = user?.boostsPurchased?.[item.id]
+          const canAfford = user?.hashBalance >= item.price
 
           return (
             <Card key={item.id} className="bg-white/10 backdrop-blur-sm border-white/20">

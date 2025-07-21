@@ -81,11 +81,11 @@ export default function ReferralSystem({ user, onUserUpdate }: ReferralSystemPro
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">{user.referralCount || 0}</div>
+                <div className="text-2xl font-bold text-white">{user?.referralCount || 0}</div>
                 <div className="text-white/70 text-sm">Friends Referred</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-400">{(user.referralCount || 0) * 500}</div>
+                <div className="text-2xl font-bold text-yellow-400">{(user?.referralCount || 0) * 500}</div>
                 <div className="text-white/70 text-sm">Bonus HASH Earned</div>
               </div>
             </div>
