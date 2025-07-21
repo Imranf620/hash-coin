@@ -1,7 +1,7 @@
 {
-  "url": "https://hash-coin-alpha.vercel.app/",
+  "url": "https://hash-coin-alpha.vercel.app",
   "name": "Hash Coin",
-  "icons": ["https://hash-coin-alpha.vercel.app/icon-512x512.png"],
-  "bridgeUrl": "https://bridge.tonapi.io/bridge",
-  "version": "1.0"
+  "iconUrl": "https://hash-coin-alpha.vercel.app/icon-512x512.png",
+  "termsOfUseUrl": "https://hash-coin-alpha.vercel.app/terms",
+  "privacyPolicyUrl": "https://hash-coin-alpha.vercel.app/privacy"
 }
