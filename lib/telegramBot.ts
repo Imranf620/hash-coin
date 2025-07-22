@@ -9,6 +9,7 @@ export class TelegramBot {
 
   async sendMessage(chatId: number, text: string) {
     const url = `https://api.telegram.org/bot${this.botToken}/sendMessage`;
+    console.log(`Sending message to chat ${chatId}: ${text}`);
 
     const res = await fetch(url, {
       method: 'POST',

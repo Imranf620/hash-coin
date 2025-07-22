@@ -5,6 +5,7 @@ export async function POST(req: Request) {
 
   const chatId = body?.message?.chat?.id;
   const text = body?.message?.text;
+  console.log("Received Telegram message:", JSON.stringify(body, null, 2));
 
   if (text === '/start' && chatId) {
     const token = process.env.TELEGRAM_BOT_TOKEN!;
@@ -20,8 +21,10 @@ export async function POST(req: Request) {
           inline_keyboard: [
             [
               {
-                text: "🚀 Tap to Earn",
-                url: "https://hash-coin-alpha.vercel.app"
+                text: "🚀 Launch Web App",
+                web_app: {
+                  url: "https://hash-coin-alpha.vercel.app/webapp"  // <-- Your Web App URL here
+                }
               }
             ]
           ]
