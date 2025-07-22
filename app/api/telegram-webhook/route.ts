@@ -23,7 +23,7 @@ export async function POST(req: Request) {
               {
                 text: "🚀 Launch Web App",
                 web_app: {
-                  url: "https://hash-coin-alpha.vercel.app"  // <-- Your Web App URL here
+                  url: "https://hash-coin-alpha.vercel.app/webapp"  // <-- Your Web App URL here
                 }
               }
             ]
