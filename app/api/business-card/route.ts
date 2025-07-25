@@ -1,5 +1,6 @@
+import connectToDatabase from "@/lib/mongodb"
+import UserModel from "@/lib/models/User"
 import { type NextRequest, NextResponse } from "next/server"
-import { getDatabase } from "@/lib/mongodb"
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,20 +10,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Wallet address required" }, { status: 400 })
     }
 
-    const db = await getDatabase()
-    const users = db.collection("users")
+    await connectToDatabase()
 
-    const updatedUser = await users.findOneAndUpdate(
+    const updatedUser = await UserModel.findOneAndUpdate(
       { walletAddress },
       { $set: { businessCard } },
-      { returnDocument: "after" },
-    )
+      { new: true } // return the updated document
+    ).lean()
 
-    if (!updatedUser.value) {
+    if (!updatedUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
 
-    return NextResponse.json(updatedUser.value)
+    return NextResponse.json(updatedUser)
   } catch (error) {
     console.error("Business card API error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

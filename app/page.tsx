@@ -7,45 +7,79 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Coins, Zap, Users, Trophy, ShoppingBag, CreditCard, Lock } from "lucide-react"
+import { Coins, Zap, Users, Trophy, ShoppingBag, CreditCard, Lock, AlertCircle } from "lucide-react"
 import GameInterface from "@/components/game-interface"
 import Store from "@/components/store"
 import Leaderboard from "@/components/leaderboard"
 import BusinessCard from "@/components/business-card"
 import ReferralSystem from "@/components/referral-system"
+import AuthService from "@/lib/auth"
+import { User } from "@/types/User" 
 
 export default function HomePage() {
   const wallet = useTonWallet()
   const [tonConnectUI] = useTonConnectUI()
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [authService] = useState(() => AuthService.getInstance())
 
   useEffect(() => {
     if (wallet?.account?.address) {
-      fetchOrCreateUser(wallet.account.address)
+      authenticateUser(wallet.account.address)
     } else {
       setLoading(false)
+      authService.logout() // Clear any existing session
     }
   }, [wallet])
 
-  const fetchOrCreateUser = async (walletAddress: string) => {
+  const authenticateUser = async (walletAddress: string) => {
     try {
-      const response = await fetch("/api/user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ walletAddress }),
-      })
-      const userData = await response.json()
-      setUser(userData)
+      setError(null)
+      const loginResult = await authService.login(walletAddress)
+      
+      if (loginResult.success && loginResult.data) {
+        setUser(loginResult.data.user)
+      } else {
+        setError(loginResult.error || "Authentication failed")
+      }
     } catch (error) {
-      console.error("Error fetching user:", error)
+      console.error("Authentication error:", error)
+      setError("Failed to authenticate user")
     } finally {
       setLoading(false)
     }
   }
 
-  const updateUser = (updatedUser: any) => {
-    setUser(updatedUser)
+  const updateUser = async (updatedUserData: Partial<User>) => {
+    try {
+      const result = await authService.updateUser(updatedUserData)
+      
+      if (result.success && result.data) {
+        setUser(result.data)
+      } else {
+        setError(result.error || "Failed to update user")
+      }
+    } catch (error) {
+      console.error("Update user error:", error)
+      setError("Failed to update user")
+    }
+  }
+
+  const refreshUser = async () => {
+    try {
+      const result = await authService.fetchUser()
+      
+      if (result.success && result.data) {
+        setUser(result.data)
+        setError(null)
+      } else {
+        setError(result.error || "Failed to refresh user data")
+      }
+    } catch (error) {
+      console.error("Refresh user error:", error)
+      setError("Failed to refresh user data")
+    }
   }
 
   if (loading) {
@@ -73,6 +107,32 @@ export default function HomePage() {
     )
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-500 to-red-600 flex items-center justify-center p-4">
+        <Card className="bg-white/10 backdrop-blur-sm border-white/20 max-w-md">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <AlertCircle className="h-5 w-5" />
+              Authentication Error
+            </CardTitle>
+            <CardDescription className="text-white/70">
+              {error}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              onClick={() => window.location.reload()} 
+              className="w-full bg-white/20 hover:bg-white/30 text-white"
+            >
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-500 to-red-600">
       <div className="container mx-auto p-4">
@@ -81,7 +141,17 @@ export default function HomePage() {
             <div className="text-3xl">🪙</div>
             <h1 className="text-2xl font-bold text-white">Hash Coin</h1>
           </div>
-          <TonConnectButton />
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={refreshUser}
+              className="text-white hover:bg-white/10"
+            >
+              Refresh
+            </Button>
+            <TonConnectButton />
+          </div>
         </header>
 
         {user && (
@@ -92,21 +162,24 @@ export default function HomePage() {
                   <div>
                     <CardTitle className="text-white flex items-center gap-2">
                       <Coins className="h-5 w-5" />
-                      {user?.hashBalance?.toLocaleString()} HASH
+                      {user.hashBalance.toLocaleString()} HASH
                     </CardTitle>
                     <CardDescription className="text-white/70">
-                      Level {user?.level} • {user?.tapCount} total taps
+                      Level {user.level} • {user.tapCount} total taps
                     </CardDescription>
                   </div>
                   <Badge variant="secondary" className="bg-white/20 text-white">
-                    {user?.level < 10
-                      ? `${Math.floor((user?.hashBalance % 1000) / 10)}% to Level ${user?.level + 1}`
+                    {user.level < 10
+                      ? `${Math.floor((user.hashBalance % 1000) / 10)}% to Level ${user.level + 1}`
                       : "Max Level"}
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent>
-                <Progress value={user?.level < 10 ? (user?.hashBalance % 1000) / 10 : 100} className="h-2 bg-white/20" />
+                <Progress 
+                  value={user.level < 10 ? (user.hashBalance % 1000) / 10 : 100} 
+                  className="h-2 bg-white/20" 
+                />
               </CardContent>
             </Card>
           </div>
@@ -158,11 +231,16 @@ export default function HomePage() {
         </Tabs>
 
         <div className="mt-6 text-center">
-          <Button disabled className="bg-white/10 backdrop-blur-sm border-white/20 text-white/50 cursor-not-allowed">
+          <Button 
+            disabled 
+            className="bg-white/10 backdrop-blur-sm border-white/20 text-white/50 cursor-not-allowed"
+          >
             <Lock className="h-4 w-4 mr-2" />
             Convert to USD (Locked Until Launch)
           </Button>
-          <p className="text-white/60 text-sm mt-2">Conversion will be available after official launch</p>
+          <p className="text-white/60 text-sm mt-2">
+            Conversion will be available after official launch
+          </p>
         </div>
       </div>
     </div>

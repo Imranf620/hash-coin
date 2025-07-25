@@ -1,16 +1,17 @@
+// app/api/leaderboard/route.ts
 import { NextResponse } from "next/server"
-import { getDatabase } from "@/lib/mongodb"
+import connectToDatabase from "@/lib/mongodb"
+import UserModel from "@/lib/models/User"
 
 export async function GET() {
   try {
-    const db = await getDatabase()
-    const users = db.collection("users")
+    await connectToDatabase() // ensure mongoose is connected
 
     const [balance, taps, referrals, level] = await Promise.all([
-      users.find({}).sort({ hashBalance: -1 }).limit(10).toArray(),
-      users.find({}).sort({ tapCount: -1 }).limit(10).toArray(),
-      users.find({}).sort({ referralCount: -1 }).limit(10).toArray(),
-      users.find({}).sort({ level: -1, hashBalance: -1 }).limit(10).toArray(),
+      UserModel.find({}).sort({ hashBalance: -1 }).limit(10).lean(),
+      UserModel.find({}).sort({ tapCount: -1 }).limit(10).lean(),
+      UserModel.find({}).sort({ referralCount: -1 }).limit(10).lean(),
+      UserModel.find({}).sort({ level: -1, hashBalance: -1 }).limit(10).lean(),
     ])
 
     return NextResponse.json({

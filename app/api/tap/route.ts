@@ -1,24 +1,23 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { getDatabase } from "@/lib/mongodb"
-import { calculateLevel } from "@/lib/models/User"
+import { NextResponse } from "next/server"
+import { type NextRequest } from "next/server"
+import { calculateLevel } from "@/utils/helper"
+import connectToDatabase from "@/lib/mongodb"
+import UserModel from "@/lib/models/User" 
 
 export async function POST(request: NextRequest) {
   try {
-    const { walletAddress } = await request.json()
+    await connectToDatabase() // ensures Mongoose is connected
 
+    const { walletAddress } = await request.json()
     if (!walletAddress) {
       return NextResponse.json({ error: "Wallet address required" }, { status: 400 })
     }
 
-    const db = await getDatabase()
-    const users = db.collection("users")
-
-    const user = await users.findOne({ walletAddress })
+    const user = await UserModel.findOne({ walletAddress })
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
 
-    // Check tap rate limiting
     const now = new Date()
     const lastTap = user.lastTap ? new Date(user.lastTap) : new Date(0)
     const tapCooldown = user.boostsPurchased?.fastTap ? 500 : 1000
@@ -27,31 +26,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Tap too fast" }, { status: 429 })
     }
 
-    // Calculate coins per tap
     let coinsPerTap = 1
     if (user.boostsPurchased?.multiplier) coinsPerTap *= 2
-    if (user.boostsPurchased?.timeMultiplier && new Date(user.boostsPurchased.timeMultiplier) > now) {
+    if (
+      user.boostsPurchased?.timeMultiplier &&
+      new Date(user.boostsPurchased.timeMultiplier) > now
+    ) {
       coinsPerTap *= 3
     }
 
-    const newBalance = user.hashBalance + coinsPerTap
-    const newLevel = calculateLevel(newBalance)
-    const newTapCount = user.tapCount + 1
+    user.hashBalance += coinsPerTap
+    user.level = calculateLevel(user.hashBalance)
+    user.tapCount += 1
+    user.lastTap = now
 
-    const updatedUser = await users.findOneAndUpdate(
-      { walletAddress },
-      {
-        $set: {
-          hashBalance: newBalance,
-          level: newLevel,
-          tapCount: newTapCount,
-          lastTap: now,
-        },
-      },
-      { returnDocument: "after" },
-    )
+    await user.save()
 
-    return NextResponse.json(updatedUser.value)
+    return NextResponse.json(user)
   } catch (error) {
     console.error("Tap API error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

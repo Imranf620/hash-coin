@@ -24,7 +24,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <TonConnectUIProvider manifestUrl="https://hash-coin-alpha.vercel.app/tonconnect-manifest.json">{children}</TonConnectUIProvider>
-        {/* <TonConnectUIProvider manifestUrl="https://e192dc2b44c0.ngrok-free.app/tonconnect-manifest.json">{children}</TonConnectUIProvider> */}
+        {/* <TonConnectUIProvider manifestUrl="https://4d4337a29c51.ngrok-free.app/tonconnect-manifest.json">{children}</TonConnectUIProvider> */}
 
       </body>
     </html>
