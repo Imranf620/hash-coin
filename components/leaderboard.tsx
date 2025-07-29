@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Trophy, Coins, Zap, Users, Crown, Medal, Award } from "lucide-react"
+import Loading from "./ui/loading"
 
 export default function Leaderboard() {
   const [leaderboards, setLeaderboards] = useState({
@@ -75,11 +76,7 @@ export default function Leaderboard() {
 
   if (loading) {
     return (
-      <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-        <CardContent className="p-8 text-center">
-          <div className="text-white">Loading leaderboards...</div>
-        </CardContent>
-      </Card>
+     <Loading/>
     )
   }
 
